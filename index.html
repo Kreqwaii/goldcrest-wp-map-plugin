@@ -1,0 +1,3187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goldcrest Land &amp; Forestry Group | WordPress Market Map Plugin Workbench</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B3A63'/%3E%3Cpath d='M16 5L24 19H8L16 5Z' fill='%23E5BB49'/%3E%3Crect x='14.5' y='19' width='3' height='7' fill='%23FFFFFF'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    :root {
+      --navy-deep: #0B3A63;
+      --navy: #0F4C81;
+      --navy-soft: #EBF1F7;
+      --gold: #E5BB49;
+      --gold-deep: #B88714;
+      --gold-soft: #FCF6E4;
+      --surface-page: #F7F8FA;
+      --surface-card: #FFFFFF;
+      --surface-muted: #F1F4F8;
+      --ink: #1B2B3A;
+      --ink-2: #526375;
+      --ink-3: #7A8B9C;
+      --line: #DCE4EC;
+      --line-strong: #C4D0DC;
+      --ok: #1F6F50;
+      --ok-soft: #E8F5EF;
+      --warn: #9A6700;
+      --warn-soft: #FEF6E0;
+      --err: #A82828;
+      --err-soft: #FDECEC;
+      --cat-commercial: #0F4C81;
+      --cat-amenity: #3B7A57;
+      --cat-estate: #B88714;
+      --cat-carbon: #2E7D6B;
+      --cat-natcap: #5D6D7E;
+      --cat-farm: #8D6E43;
+      --cat-planting: #4A7C59;
+      --cat-house: #335C81;
+      --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+      --sans: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+      --r-outer: 12px;
+      --r-mid: 8px;
+      --r-sm: 6px;
+      --r-xs: 4px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--surface-page);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    /* Workbench Top Bar */
+    .wb-header {
+      position: sticky;
+      top: 0;
+      z-index: 1200;
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .wb-header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .wb-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 240px;
+    }
+
+    .wb-brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-sm);
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(229, 187, 73, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .wb-brand-text h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      color: #FFFFFF;
+    }
+
+    .wb-brand-sub {
+      font-size: 11px;
+      color: #B8CCE0;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .wb-tabs {
+      display: inline-flex;
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--r-mid);
+      padding: 4px;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .wb-tab {
+      appearance: none;
+      border: 0;
+      background-color: transparent;
+      color: #D7E4F0;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .wb-tab:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+    }
+
+    .wb-tab.is-active {
+      background-color: var(--gold);
+      color: var(--navy-deep);
+    }
+
+    .wb-status-cluster {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wb-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: var(--r-sm);
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 11px;
+      font-weight: 600;
+      color: #E6EFF7;
+    }
+
+    .wb-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #4AD295;
+      flex-shrink: 0;
+    }
+
+    /* Main Shell */
+    .wb-main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .wb-view {
+      display: none;
+    }
+
+    .wb-view.is-active {
+      display: block;
+    }
+
+    /* Browser Chrome Wrapper for WP Page Preview */
+    .wp-frame {
+      background-color: var(--surface-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-outer);
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(11, 58, 99, 0.05);
+    }
+
+    .wp-browser-bar {
+      background-color: var(--surface-muted);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .wp-url-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--surface-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--ink-2);
+      min-width: 300px;
+    }
+
+    .wp-url-box code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--navy-deep);
+      font-weight: 600;
+    }
+
+    .wp-mount-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--r-xs);
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background-color: var(--surface-card);
+      color: var(--ink-2);
+    }
+
+    .badge-navy {
+      background-color: var(--navy-soft);
+      border-color: #C5D7E8;
+      color: var(--navy-deep);
+    }
+
+    .badge-gold {
+      background-color: var(--gold-soft);
+      border-color: #E7CF86;
+      color: #7D5906;
+    }
+
+    .badge-ok {
+      background-color: var(--ok-soft);
+      border-color: #B9E0CF;
+      color: var(--ok);
+    }
+
+    /* Simulated Goldcrest WordPress Site Header */
+    .site-header {
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .site-header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .site-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .site-logo-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      color: #FFFFFF;
+    }
+
+    .site-logo-sub {
+      font-size: 9.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .site-nav span {
+      font-size: 12px;
+      font-weight: 500;
+      color: #D7E4F0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .site-nav span.is-current {
+      color: #FFFFFF;
+      font-weight: 600;
+      border-bottom-color: var(--gold);
+    }
+
+    .site-hero {
+      background-color: #FFFFFF;
+      border-bottom: 1px solid var(--line);
+      padding: 20px 24px;
+    }
+
+    .site-hero-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .site-hero h2 {
+      margin: 0 0 4px 0;
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--navy-deep);
+      line-height: 1.1;
+    }
+
+    .site-hero p {
+      margin: 0;
+      color: var(--ink-2);
+      font-size: 13px;
+      max-width: 720px;
+    }
+
+    /* ======================================================================
+       SCOPED PLUGIN CONTAINER (.gc-land-forestry-map)
+       Zero global CSS bleed into theme header/footer
+    ====================================================================== */
+    .gc-land-forestry-map {
+      background-color: var(--surface-page);
+      padding: 20px 24px 24px 24px;
+    }
+
+    .gc-land-forestry-map .gc-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* Filter Bar */
+    .gc-land-forestry-map .gc-filter-panel {
+      background-color: var(--surface-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-outer);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .gc-land-forestry-map .gc-filter-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .gc-land-forestry-map .gc-seg {
+      display: inline-flex;
+      background-color: var(--surface-muted);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .gc-land-forestry-map .gc-seg button {
+      appearance: none;
+      border: 0;
+      background-color: transparent;
+      color: var(--ink-2);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .gc-land-forestry-map .gc-seg button:hover {
+      color: var(--navy-deep);
+    }
+
+    .gc-land-forestry-map .gc-seg button.is-on {
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+    }
+
+    .gc-land-forestry-map .gc-count-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .gc-land-forestry-map .gc-count-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .gc-land-forestry-map .gc-count-sub {
+      font-size: 11.5px;
+      color: var(--ink-2);
+    }
+
+    .gc-land-forestry-map .gc-btn-reset {
+      appearance: none;
+      border: 1px solid var(--line-strong);
+      background-color: var(--surface-card);
+      color: var(--navy-deep);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 150ms ease, border-color 150ms ease;
+    }
+
+    .gc-land-forestry-map .gc-btn-reset:hover {
+      background-color: var(--navy-soft);
+      border-color: var(--navy);
+    }
+
+    .gc-land-forestry-map .gc-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 1100px) {
+      .gc-land-forestry-map .gc-filter-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .gc-land-forestry-map .gc-filter-grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+    }
+
+    .gc-land-forestry-map .gc-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .gc-land-forestry-map .gc-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-2);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .gc-land-forestry-map .gc-field select,
+    .gc-land-forestry-map .gc-field input {
+      width: 100%;
+      height: 36px;
+      padding: 6px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-sm);
+      background-color: #FFFFFF;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 500;
+      transition: border-color 150ms ease;
+    }
+
+    .gc-land-forestry-map .gc-field select:focus,
+    .gc-land-forestry-map .gc-field input:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+
+    .gc-land-forestry-map .gc-range-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    /* Map Stage */
+    .gc-land-forestry-map .gc-stage {
+      position: relative;
+      height: 600px;
+      min-height: 520px;
+      border-radius: var(--r-outer);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background-color: #E9EFF5;
+    }
+
+    .gc-land-forestry-map #gc-map {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Map Overlays */
+    .gc-land-forestry-map .gc-map-toolbar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .gc-land-forestry-map .gc-ctrl-group {
+      display: inline-flex;
+      align-items: center;
+      background-color: #FFFFFF;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-mid);
+      padding: 3px;
+      gap: 3px;
+      box-shadow: 0 2px 8px rgba(11, 58, 99, 0.12);
+    }
+
+    .gc-land-forestry-map .gc-ctrl-btn {
+      appearance: none;
+      border: 0;
+      background-color: transparent;
+      color: var(--ink);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .gc-land-forestry-map .gc-ctrl-btn:hover {
+      background-color: var(--surface-muted);
+    }
+
+    .gc-land-forestry-map .gc-ctrl-btn.is-active {
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+    }
+
+    .gc-land-forestry-map .gc-zoom-readout {
+      padding: 0 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--navy-deep);
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+    }
+
+    /* otherMaxZoom Auto-Hide Notice */
+    .gc-land-forestry-map .gc-zoom-notice {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 500;
+      max-width: 390px;
+      background-color: #FFFFFF;
+      border: 1px solid #E5BB49;
+      border-radius: var(--r-mid);
+      padding: 10px 12px;
+      box-shadow: 0 4px 14px rgba(11, 58, 99, 0.16);
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .gc-land-forestry-map .gc-zoom-notice.is-visible {
+      display: flex;
+    }
+
+    .gc-land-forestry-map .gc-zoom-notice-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background-color: var(--gold-soft);
+      color: #8A6108;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .gc-land-forestry-map .gc-zoom-notice-body {
+      flex: 1;
+      font-size: 11.5px;
+      color: var(--ink);
+    }
+
+    .gc-land-forestry-map .gc-zoom-notice-title {
+      font-weight: 700;
+      color: var(--navy-deep);
+      margin-bottom: 2px;
+    }
+
+    .gc-land-forestry-map .gc-zoom-notice-btn {
+      margin-top: 6px;
+      appearance: none;
+      border: 1px solid var(--navy);
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      transition: background-color 150ms ease;
+    }
+
+    .gc-land-forestry-map .gc-zoom-notice-btn:hover {
+      background-color: var(--navy);
+    }
+
+    /* Legend */
+    .gc-land-forestry-map .gc-legend {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      z-index: 500;
+      background-color: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-mid);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 8px rgba(11, 58, 99, 0.12);
+    }
+
+    .gc-land-forestry-map .gc-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .gc-land-forestry-map .gc-sw {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .gc-land-forestry-map .gc-sw.gold {
+      background-color: var(--gold);
+      border: 2px solid var(--navy-deep);
+    }
+
+    .gc-land-forestry-map .gc-sw.other {
+      width: 11px;
+      height: 11px;
+      background-color: var(--navy);
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 0 0 1px var(--navy-deep);
+    }
+
+    /* Custom Leaflet Pin Markers */
+    .gc-pin-wrap {
+      background: transparent;
+      border: 0;
+    }
+
+    .gc-pin-gold {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: var(--gold);
+      border: 2.5px solid var(--navy-deep);
+      box-shadow: 0 2px 6px rgba(11, 58, 99, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 140ms ease, background-color 140ms ease;
+    }
+
+    .gc-pin-gold::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--navy-deep);
+    }
+
+    .gc-pin-gold:hover,
+    .gc-pin-gold.is-selected {
+      transform: scale(1.18);
+      background-color: #F2CE63;
+    }
+
+    .gc-pin-other {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: var(--navy);
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 5px rgba(11, 58, 99, 0.38);
+      transition: transform 140ms ease, background-color 140ms ease;
+    }
+
+    .gc-pin-other:hover,
+    .gc-pin-other.is-selected {
+      transform: scale(1.25);
+      background-color: var(--navy-deep);
+    }
+
+    /* Goldcrest Property Card Overlay */
+    .gc-land-forestry-map .gc-card {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      z-index: 520;
+      width: 360px;
+      max-width: calc(100% - 24px);
+      background-color: #FFFFFF;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-outer);
+      box-shadow: 0 8px 24px rgba(11, 58, 99, 0.18);
+      overflow: hidden;
+      display: none;
+    }
+
+    .gc-land-forestry-map .gc-card.is-open {
+      display: block;
+    }
+
+    .gc-land-forestry-map .gc-card-hd {
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .gc-land-forestry-map .gc-card-kicker {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 2px;
+    }
+
+    .gc-land-forestry-map .gc-card-title {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: #FFFFFF;
+    }
+
+    .gc-land-forestry-map .gc-card-close {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 150ms ease;
+    }
+
+    .gc-land-forestry-map .gc-card-close:hover {
+      background-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .gc-land-forestry-map .gc-card-bd {
+      padding: 16px;
+    }
+
+    .gc-land-forestry-map .gc-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .gc-land-forestry-map .gc-type-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: var(--r-xs);
+      background-color: var(--surface-muted);
+      border: 1px solid var(--line);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .gc-land-forestry-map .gc-type-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .gc-land-forestry-map .gc-kv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 12px;
+      background-color: var(--surface-page);
+      border: 1px solid var(--line);
+      border-radius: var(--r-mid);
+      margin-bottom: 14px;
+    }
+
+    .gc-land-forestry-map .gc-kv-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-2);
+    }
+
+    .gc-land-forestry-map .gc-kv-val {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-top: 2px;
+    }
+
+    .gc-land-forestry-map .gc-card-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--r-sm);
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--navy-deep);
+      cursor: pointer;
+      transition: background-color 150ms ease;
+    }
+
+    .gc-land-forestry-map .gc-card-cta:hover {
+      background-color: var(--navy);
+    }
+
+    /* ======================================================================
+       "ACT FOR ME" ENQUIRY MODAL
+    ====================================================================== */
+    .gc-modal-scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background-color: rgba(11, 58, 99, 0.56);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .gc-modal-scrim.is-open {
+      display: flex;
+    }
+
+    .gc-modal {
+      width: 100%;
+      max-width: 680px;
+      max-height: 92vh;
+      overflow-y: auto;
+      background-color: #FFFFFF;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-outer);
+      box-shadow: 0 18px 44px rgba(11, 58, 99, 0.28);
+    }
+
+    .gc-modal-hd {
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .gc-modal-hd h3 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.1;
+    }
+
+    .gc-modal-sub {
+      font-size: 11.5px;
+      color: #C7D8EA;
+      margin-top: 2px;
+    }
+
+    .gc-modal-close {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 150ms ease;
+    }
+
+    .gc-modal-close:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .gc-modal-bd {
+      padding: 20px;
+    }
+
+    .gc-prop-summary {
+      background-color: var(--surface-page);
+      border: 1px solid var(--line);
+      border-radius: var(--r-mid);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .gc-prop-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .gc-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 560px) {
+      .gc-form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gc-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .gc-input-group label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .gc-input-group input,
+    .gc-input-group textarea,
+    .gc-input-group select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-sm);
+      font-size: 12.5px;
+      color: var(--ink);
+      background-color: #FFFFFF;
+      transition: border-color 150ms ease;
+    }
+
+    .gc-input-group input:focus,
+    .gc-input-group textarea:focus,
+    .gc-input-group select:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+
+    .gc-check-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid #E7CF86;
+      background-color: var(--gold-soft);
+      border-radius: var(--r-mid);
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .gc-check-box input {
+      margin-top: 2px;
+      accent-color: var(--navy-deep);
+    }
+
+    .gc-check-box span {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy-deep);
+    }
+
+    .gc-form-error {
+      display: none;
+      padding: 10px 12px;
+      border-radius: var(--r-sm);
+      background-color: var(--err-soft);
+      border: 1px solid #E7B3B3;
+      color: var(--err);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .gc-form-error.is-visible {
+      display: block;
+    }
+
+    .gc-modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      appearance: none;
+      border: 1px solid var(--navy-deep);
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 150ms ease;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--navy);
+    }
+
+    .btn-gold {
+      appearance: none;
+      border: 1px solid var(--gold-deep);
+      background-color: var(--gold);
+      color: var(--navy-deep);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 150ms ease;
+    }
+
+    .btn-gold:hover {
+      background-color: #ECC75D;
+    }
+
+    .btn-secondary {
+      appearance: none;
+      border: 1px solid var(--line-strong);
+      background-color: #FFFFFF;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 150ms ease, border-color 150ms ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--surface-muted);
+      border-color: var(--navy);
+    }
+
+    /* REST Simulation Output inside Modal */
+    .gc-dispatch-preview {
+      display: none;
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .gc-dispatch-preview.is-visible {
+      display: block;
+    }
+
+    .gc-dispatch-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background-color: var(--ok-soft);
+      border: 1px solid #B9E0CF;
+      border-radius: var(--r-mid);
+      color: var(--ok);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .gc-code-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .gc-code-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gc-code-box {
+      background-color: #112233;
+      color: #DCE8F5;
+      border-radius: var(--r-mid);
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .gc-code-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy-deep);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ======================================================================
+       VIEW 2: WP ADMIN SETTINGS & SHEET SYNC
+    ====================================================================== */
+    .wp-admin-shell {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      border: 1px solid var(--line);
+      border-radius: var(--r-outer);
+      overflow: hidden;
+      background-color: #F0F0F1;
+      min-height: 680px;
+    }
+
+    @media (max-width: 900px) {
+      .wp-admin-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .wp-sidebar {
+      background-color: #1D2327;
+      color: #DCDCDE;
+      padding: 16px 0;
+    }
+
+    .wp-sidebar-title {
+      padding: 0 16px 12px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8C8F94;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 8px;
+    }
+
+    .wp-menu-item {
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #C3C4C7;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wp-menu-item.is-active {
+      background-color: var(--navy);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .wp-submenu {
+      background-color: #2C3338;
+      padding: 6px 0;
+    }
+
+    .wp-submenu-item {
+      padding: 6px 16px 6px 40px;
+      font-size: 11.5px;
+      color: #A7AAAD;
+    }
+
+    .wp-submenu-item.is-current {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .wp-admin-content {
+      padding: 24px;
+    }
+
+    .wp-admin-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .wp-admin-head h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--navy-deep);
+    }
+
+    .wp-admin-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1080px) {
+      .wp-admin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: var(--r-outer);
+      padding: 20px;
+    }
+
+    .panel-card-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-card-hd h3 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--navy-deep);
+    }
+
+    .wp-toast {
+      display: none;
+      padding: 10px 14px;
+      border-radius: var(--r-sm);
+      background-color: var(--ok-soft);
+      border: 1px solid #B9E0CF;
+      color: var(--ok);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .wp-toast.is-visible {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .diff-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .diff-stat {
+      padding: 10px;
+      border-radius: var(--r-mid);
+      border: 1px solid var(--line);
+      background-color: var(--surface-page);
+      text-align: center;
+    }
+
+    .diff-stat-num {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy-deep);
+    }
+
+    .diff-stat-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .diff-table-wrap {
+      border: 1px solid var(--line);
+      border-radius: var(--r-mid);
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+
+    table.gc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    table.gc-table th {
+      background-color: var(--surface-muted);
+      color: var(--navy-deep);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    table.gc-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    table.gc-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    /* ======================================================================
+       VIEW 3: PLUGIN ARCHITECTURE & FIXED-PRICE DELIVERY
+    ====================================================================== */
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 960px) {
+      .arch-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .file-tree {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .file-item {
+      appearance: none;
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background-color: var(--surface-page);
+      border-radius: var(--r-mid);
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: background-color 150ms ease, border-color 150ms ease;
+    }
+
+    .file-item:hover {
+      background-color: var(--navy-soft);
+      border-color: #B4CBE0;
+    }
+
+    .file-item.is-active {
+      background-color: var(--navy-deep);
+      border-color: var(--navy-deep);
+      color: #FFFFFF;
+    }
+
+    .file-item-name {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .file-item-tag {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: var(--r-xs);
+      background-color: rgba(255, 255, 255, 0.8);
+      color: var(--navy-deep);
+    }
+
+    .file-item.is-active .file-item-tag {
+      background-color: var(--gold);
+      color: var(--navy-deep);
+    }
+
+    .guardrails-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .guardrails-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .guardrail-card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: var(--r-outer);
+      padding: 16px;
+    }
+
+    .guardrail-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--r-sm);
+      background-color: var(--navy-soft);
+      color: var(--navy-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .guardrail-card h4 {
+      margin: 0 0 6px 0;
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--navy-deep);
+    }
+
+    .guardrail-card p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--ink-2);
+    }
+
+    .milestone-total-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 14px 16px;
+      background-color: var(--navy-deep);
+      color: #FFFFFF;
+      border-radius: var(--r-mid);
+      margin-top: 16px;
+    }
+
+    .milestone-total-num {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- TOP WORKBENCH HEADER -->
+  <header class="wb-header">
+    <div class="wb-header-inner">
+      <div class="wb-brand">
+        <div class="wb-brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E5BB49" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3L19 15H5L12 3Z"/>
+            <path d="M12 15V21"/>
+            <path d="M8 21H16"/>
+          </svg>
+        </div>
+        <div class="wb-brand-text">
+          <h1>Goldcrest Market Map</h1>
+          <div class="wb-brand-sub">WordPress Plugin Workbench · JJD Works / Jack Duckworth</div>
+        </div>
+      </div>
+
+      <nav class="wb-tabs" aria-label="Workbench Views">
+        <button type="button" class="wb-tab is-active" data-view="preview">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+          Live [goldcrest_market_map] Preview
+        </button>
+        <button type="button" class="wb-tab" data-view="admin">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          WP Admin &amp; Sheet Sync
+        </button>
+        <button type="button" class="wb-tab" data-view="arch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          Plugin Architecture &amp; Delivery
+        </button>
+      </nav>
+
+      <div class="wb-status-cluster">
+        <div class="wb-pill tabular" id="wb-pin-status">
+          <span class="wb-dot"></span>
+          <span id="wb-total-pins-pill">35 Real Pins Active</span>
+        </div>
+        <div class="wb-pill tabular" id="wb-maxzoom-pill">
+          otherMaxZoom: 12
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wb-main">
+    <!-- ==================================================================
+         VIEW 1: LIVE [goldcrest_market_map] WORDPRESS PAGE PREVIEW
+    =================================================================== -->
+    <section class="wb-view is-active" id="view-preview" aria-label="Live WordPress Shortcode Preview">
+      <div class="wp-frame">
+        <div class="wp-browser-bar">
+          <div class="wp-url-box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1F6F50" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <code>https://goldcrestlfg.com/land-forestry-market-map/</code>
+          </div>
+          <div class="wp-mount-badges">
+            <span class="badge badge-navy">Shortcode: [goldcrest_market_map]</span>
+            <span class="badge badge-gold">Static Screenshot Replaced</span>
+            <span class="badge badge-ok">Scoped: .gc-land-forestry-map</span>
+          </div>
+        </div>
+
+        <!-- Simulated Goldcrest Theme Header -->
+        <div class="site-header">
+          <div class="site-header-inner">
+            <div class="site-logo">
+              <svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <circle cx="20" cy="20" r="18.5" stroke="#E5BB49" stroke-width="1.5"/>
+                <path d="M20 8L28 24H12L20 8Z" fill="#E5BB49"/>
+                <path d="M20 14L25.5 25H14.5L20 14Z" fill="#0B3A63"/>
+                <rect x="18.7" y="24" width="2.6" height="7" fill="#FFFFFF"/>
+              </svg>
+              <div>
+                <div class="site-logo-title">GOLDCREST</div>
+                <div class="site-logo-sub">Land &amp; Forestry Group</div>
+              </div>
+            </div>
+            <nav class="site-nav" aria-label="Goldcrest Site Navigation">
+              <span>Properties</span>
+              <span>Forestry Management</span>
+              <span>Land &amp; Estates</span>
+              <span class="is-current">Market Map</span>
+              <span>About</span>
+              <span>Contact</span>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Page Editorial Header -->
+        <div class="site-hero">
+          <div class="site-hero-inner">
+            <div>
+              <h2>UK Land &amp; Forestry Market Map</h2>
+              <p>Live interactive market view combining Goldcrest Land &amp; Forestry Group exclusive instructions with wider UK forestry, estate, and rural land opportunities.</p>
+            </div>
+            <div class="badge badge-navy tabular" id="preview-config-badge">
+              Leaflet 1.9.4 · Conditional Enqueue Active
+            </div>
+          </div>
+        </div>
+
+        <!-- Scoped WordPress Plugin Container -->
+        <div class="gc-land-forestry-map" id="gc-plugin-root">
+          <div class="gc-inner">
+            <!-- Filter Panel -->
+            <div class="gc-filter-panel">
+              <div class="gc-filter-top">
+                <div class="gc-seg" role="group" aria-label="Pin source filter">
+                  <button type="button" class="is-on" data-pin-filter="all">All Listings</button>
+                  <button type="button" data-pin-filter="Goldcrest">Goldcrest Only</button>
+                  <button type="button" data-pin-filter="Other">Wider Market (MM)</button>
+                </div>
+
+                <div class="gc-count-bar">
+                  <div>
+                    <span class="gc-count-text tabular" id="gc-count-main">Showing 35 of 35 properties</span>
+                    <span class="gc-count-sub tabular" id="gc-count-split"> (14 Goldcrest · 21 Wider Market)</span>
+                  </div>
+                  <button type="button" class="gc-btn-reset" id="gc-btn-reset">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    Reset Filters
+                  </button>
+                </div>
+              </div>
+
+              <div class="gc-filter-grid">
+                <div class="gc-field">
+                  <label for="f-type">Property Type</label>
+                  <select id="f-type">
+                    <option value="">All Property Types</option>
+                    <option value="Commercial forest">Commercial forest</option>
+                    <option value="Estate">Estate</option>
+                    <option value="Farm">Farm</option>
+                    <option value="Planting land">Planting land</option>
+                    <option value="Amenity wood">Amenity wood</option>
+                    <option value="Carbon credits">Carbon credits</option>
+                    <option value="Natural capital">Natural capital</option>
+                    <option value="House &amp; land">House &amp; land</option>
+                  </select>
+                </div>
+
+                <div class="gc-field">
+                  <label for="f-country">Country</label>
+                  <select id="f-country">
+                    <option value="">All Countries</option>
+                    <option value="Scotland">Scotland</option>
+                    <option value="England">England</option>
+                    <option value="Wales">Wales</option>
+                  </select>
+                </div>
+
+                <div class="gc-field">
+                  <label for="f-region">Region</label>
+                  <select id="f-region">
+                    <option value="">All Regions</option>
+                  </select>
+                </div>
+
+                <div class="gc-field">
+                  <label>Hectares (Min / Max)</label>
+                  <div class="gc-range-pair">
+                    <input type="number" id="f-ha-min" min="0" step="1" placeholder="Min ha" class="tabular" aria-label="Minimum hectares">
+                    <input type="number" id="f-ha-max" min="0" step="1" placeholder="Max ha" class="tabular" aria-label="Maximum hectares">
+                  </div>
+                </div>
+
+                <div class="gc-field">
+                  <label>Guide Price GBP (Min / Max)</label>
+                  <div class="gc-range-pair">
+                    <input type="number" id="f-price-min" min="0" step="25000" placeholder="Min GBP" class="tabular" aria-label="Minimum guide price">
+                    <input type="number" id="f-price-max" min="0" step="25000" placeholder="Max GBP" class="tabular" aria-label="Maximum guide price">
+                  </div>
+                </div>
+
+                <div class="gc-field">
+                  <label for="f-quick-ha">Quick Size Band</label>
+                  <select id="f-quick-ha">
+                    <option value="">Custom / Any Size</option>
+                    <option value="0-10">Under 10 ha</option>
+                    <option value="10-50">10 to 50 ha</option>
+                    <option value="50-200">50 to 200 ha</option>
+                    <option value="200-">200 ha and above</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Map Stage -->
+            <div class="gc-stage">
+              <div id="gc-map" aria-label="UK Land and Forestry Interactive Map"></div>
+
+              <!-- Map Top-Left Controls -->
+              <div class="gc-map-toolbar">
+                <div class="gc-ctrl-group" role="group" aria-label="Basemap switcher">
+                  <button type="button" class="gc-ctrl-btn is-active" data-basemap="topo">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+                    Light Topo
+                  </button>
+                  <button type="button" class="gc-ctrl-btn" data-basemap="sat">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    Esri World Imagery
+                  </button>
+                </div>
+
+                <div class="gc-ctrl-group" aria-label="Zoom controls">
+                  <button type="button" class="gc-ctrl-btn" id="gc-zoom-out" title="Zoom out">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  </button>
+                  <span class="gc-zoom-readout tabular" id="gc-zoom-readout">z6</span>
+                  <button type="button" class="gc-ctrl-btn" id="gc-zoom-in" title="Zoom in">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  </button>
+                  <button type="button" class="gc-ctrl-btn" id="gc-fit-uk" title="Fit UK Bounds">Fit UK</button>
+                  <button type="button" class="gc-ctrl-btn" id="gc-test-z13" title="Test otherMaxZoom auto-hide at z13">Test z13</button>
+                </div>
+              </div>
+
+              <!-- otherMaxZoom Auto-Hide Notice -->
+              <div class="gc-zoom-notice" id="gc-zoom-notice" role="status">
+                <div class="gc-zoom-notice-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="gc-zoom-notice-body">
+                  <div class="gc-zoom-notice-title tabular" id="gc-zoom-notice-title">Wider-market pins hidden above zoom 12</div>
+                  <div id="gc-zoom-notice-desc">Approximate coordinates (2 decimal places, ~1 km) are hidden beyond otherMaxZoom to preserve confidentiality. Goldcrest exact pins remain visible.</div>
+                  <button type="button" class="gc-zoom-notice-btn tabular" id="gc-zoom-back-btn">Zoom back to z12</button>
+                </div>
+              </div>
+
+              <!-- Legend -->
+              <div class="gc-legend">
+                <div class="gc-legend-item">
+                  <span class="gc-sw gold"></span>
+                  <span>Goldcrest Exclusive (Exact Location)</span>
+                </div>
+                <div class="gc-legend-item">
+                  <span class="gc-sw other"></span>
+                  <span class="tabular" id="gc-legend-other-label">Wider Market MM-Ref (Approx. up to z12)</span>
+                </div>
+                <div class="gc-legend-item" style="color: var(--ink-2); font-weight: 500;" id="gc-basemap-attr">
+                  Basemap: Light Topo (OS Light_3857 Ready)
+                </div>
+              </div>
+
+              <!-- Goldcrest Property Card -->
+              <aside class="gc-card" id="gc-property-card" aria-live="polite">
+                <div class="gc-card-hd">
+                  <div>
+                    <div class="gc-card-kicker" id="card-kicker">Goldcrest Exclusive</div>
+                    <h3 class="gc-card-title" id="card-title">Locherlour Forest</h3>
+                  </div>
+                  <button type="button" class="gc-card-close" id="card-close" aria-label="Close property card">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div class="gc-card-bd">
+                  <div class="gc-tags" id="card-tags"></div>
+                  <div class="gc-kv-grid">
+                    <div>
+                      <div class="gc-kv-label">Location</div>
+                      <div class="gc-kv-val" id="card-region">Central Scotland &amp; Argyll</div>
+                    </div>
+                    <div>
+                      <div class="gc-kv-label">Status</div>
+                      <div class="gc-kv-val" id="card-status">For sale</div>
+                    </div>
+                    <div>
+                      <div class="gc-kv-label">Total Area</div>
+                      <div class="gc-kv-val tabular" id="card-area">105.24 ha / 260.05 ac</div>
+                    </div>
+                    <div>
+                      <div class="gc-kv-label">Guide Price</div>
+                      <div class="gc-kv-val tabular" id="card-price">Offers over £1,800,000</div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                      <div class="gc-kv-label">Coordinates</div>
+                      <div class="gc-kv-val tabular" id="card-coords">56.39627, -3.91231</div>
+                    </div>
+                  </div>
+                  <a class="gc-card-cta" id="card-link" href="#" target="_blank" rel="noopener noreferrer">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    View Property on goldcrestlfg.com
+                  </a>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         VIEW 2: WP ADMIN SETTINGS & SHEET SYNC
+    =================================================================== -->
+    <section class="wb-view" id="view-admin" aria-label="WordPress Admin Settings and Sheet Sync">
+      <div class="wp-admin-shell">
+        <aside class="wp-sidebar" aria-label="WordPress Admin Navigation">
+          <div class="wp-sidebar-title">WordPress Admin</div>
+          <div class="wp-menu-item">Dashboard</div>
+          <div class="wp-menu-item">Properties (CPT)</div>
+          <div class="wp-menu-item">Pages</div>
+          <div class="wp-menu-item">Elementor</div>
+          <div class="wp-menu-item">WP Go Maps Pro</div>
+          <div class="wp-menu-item is-active">Settings</div>
+          <div class="wp-submenu">
+            <div class="wp-submenu-item">General</div>
+            <div class="wp-submenu-item">Permalinks</div>
+            <div class="wp-submenu-item is-current">Goldcrest Market Map</div>
+          </div>
+          <div class="wp-menu-item">Plugins</div>
+        </aside>
+
+        <div class="wp-admin-content">
+          <div class="wp-admin-head">
+            <div>
+              <div class="badge badge-navy" style="margin-bottom: 6px;">wp-admin/options-general.php?page=goldcrest-market-map</div>
+              <h2>Settings: Goldcrest Market Map</h2>
+            </div>
+            <div class="badge badge-ok tabular" id="admin-options-status">wp_options: gc_map_settings synced</div>
+          </div>
+
+          <div class="wp-toast" id="admin-toast" role="status">
+            <span id="admin-toast-text">Settings saved to wp_options and localized to [goldcrest_market_map].</span>
+            <button type="button" class="btn-secondary" id="admin-goto-preview">Verify on Live Map</button>
+          </div>
+
+          <div class="wp-admin-grid">
+            <!-- Left: Plugin Settings Form -->
+            <div class="panel-card">
+              <div class="panel-card-hd">
+                <h3>API Keys, Zoom &amp; Enquiry Routing</h3>
+                <span class="badge badge-gold">wp_options</span>
+              </div>
+
+              <form id="wp-settings-form">
+                <div class="gc-input-group">
+                  <label for="cfg-os-key">OS Data Hub API Key (Light_3857)</label>
+                  <input type="text" id="cfg-os-key" value="os_live_gc_4f91b8a2c7e03d19" class="tabular">
+                </div>
+
+                <div class="gc-form-grid">
+                  <div class="gc-input-group">
+                    <label for="cfg-os-style">OS Raster Style</label>
+                    <select id="cfg-os-style">
+                      <option value="Light_3857" selected>Light_3857 (Recommended)</option>
+                      <option value="Road_3857">Road_3857</option>
+                      <option value="Outdoor_3857">Outdoor_3857</option>
+                    </select>
+                  </div>
+                  <div class="gc-input-group">
+                    <label for="cfg-other-max-zoom">otherMaxZoom (Hide Approx. Pins Above)</label>
+                    <input type="number" id="cfg-other-max-zoom" min="5" max="17" value="12" class="tabular">
+                  </div>
+                </div>
+
+                <div class="gc-input-group">
+                  <label for="cfg-esri-key">Esri World Imagery API Token</label>
+                  <input type="text" id="cfg-esri-key" value="esri_tok_gc_88a2e019c4d7" class="tabular">
+                </div>
+
+                <div class="gc-form-grid">
+                  <div class="gc-input-group">
+                    <label for="cfg-email">enquiryRecipientEmail (wp_mail To)</label>
+                    <input type="email" id="cfg-email" value="office@goldcrestlfg.com">
+                  </div>
+                  <div class="gc-input-group">
+                    <label for="cfg-mc-tag">Mailchimp Audience Tag</label>
+                    <input type="text" id="cfg-mc-tag" value="Buyer Inquiry">
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+                  <button type="submit" class="btn-primary">Save Settings to wp_options</button>
+                  <button type="button" class="btn-secondary" id="cfg-reset-defaults">Restore Defaults</button>
+                </div>
+              </form>
+
+              <div class="gc-code-label">Live wp_localize_script Output (window.GC_MAP_CONFIG)</div>
+              <pre class="gc-code-box" id="cfg-json-preview"></pre>
+            </div>
+
+            <!-- Right: Google Sheet CSV / XLSX Sync -->
+            <div class="panel-card">
+              <div class="panel-card-hd">
+                <h3>Live Google Sheet CSV / .xlsx Importer</h3>
+                <span class="badge badge-navy">Tab: Map (public)</span>
+              </div>
+
+              <div class="gc-form-grid">
+                <div class="gc-input-group">
+                  <label for="sync-source-type">Import Source Mode</label>
+                  <select id="sync-source-type">
+                    <option value="gsheet">Google Sheet Published CSV URL</option>
+                    <option value="xlsx">Uploaded .xlsx Workbook (Map public tab)</option>
+                  </select>
+                </div>
+                <div class="gc-input-group">
+                  <label for="sync-cadence">WP-Cron Auto-Sync Schedule</label>
+                  <select id="sync-cadence">
+                    <option value="hourly">Hourly Check</option>
+                    <option value="daily" selected>Daily at 06:00 UTC</option>
+                    <option value="weekly">Weekly Manual / Cron</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="gc-input-group" id="sync-url-wrap">
+                <label for="sync-sheet-url">Google Sheet CSV Endpoint (Map public gid=0)</label>
+                <input type="text" id="sync-sheet-url" value="https://docs.google.com/spreadsheets/d/e/2PACX-goldcrest-market-map/pub?gid=0&single=true&output=csv">
+              </div>
+
+              <div class="gc-input-group">
+                <label for="sync-csv-input">Incoming CSV / Sheet Rows Preview (Editable Before Sync)</label>
+                <textarea id="sync-csv-input" rows="6" style="font-family: var(--mono); font-size: 11px;">ref,pin,name,status,type,country,region,ha,ac,guide,link,price,lat,lon
+,Goldcrest,Strathspey Pinewood,For sale,Commercial forest; Carbon credits,Scotland,Highlands & Islands,184.50,455.91,Offers over £1,650,000,https://goldcrestlfg.com/properties/strathspey-pinewood/,1650000,57.3142,-3.6521
+MM-043,Other,,For sale,Commercial forest,Scotland,Central Scotland & Argyll,166.55,411.55,Offers over £1,225,000,,1225000,55.95,-5.17
+MM-047,Other,,Under offer,Amenity wood,England,South East England,2.63,6.50,£100,000,,100000,50.90,0.14
+MM-199,Other,,For sale,Amenity wood,Wales,Wales,18.20,44.97,Guide price £295,000,,295000,52.84,-3.76</textarea>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-gold" id="btn-simulate-sync">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  Simulate Sheet Sync
+                </button>
+                <button type="button" class="btn-secondary" id="btn-reset-sync">Restore Original 35 Pins</button>
+              </div>
+
+              <div id="sync-results" style="display: none;">
+                <div class="diff-stats tabular">
+                  <div class="diff-stat">
+                    <div class="diff-stat-num" id="diff-added">+0</div>
+                    <div class="diff-stat-lbl">Added (For sale)</div>
+                  </div>
+                  <div class="diff-stat">
+                    <div class="diff-stat-num" id="diff-updated">0</div>
+                    <div class="diff-stat-lbl">Updated Prices</div>
+                  </div>
+                  <div class="diff-stat">
+                    <div class="diff-stat-num" id="diff-removed">0</div>
+                    <div class="diff-stat-lbl">Excluded (Sold/UO)</div>
+                  </div>
+                </div>
+
+                <div class="diff-table-wrap">
+                  <table class="gc-table">
+                    <thead>
+                      <tr>
+                        <th>Action</th>
+                        <th>Ref / Name</th>
+                        <th>Region</th>
+                        <th>Details</th>
+                      </tr>
+                    </thead>
+                    <tbody id="sync-diff-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         VIEW 3: PLUGIN ARCHITECTURE & FIXED-PRICE DELIVERY
+    =================================================================== -->
+    <section class="wb-view" id="view-arch" aria-label="WordPress Plugin Architecture and Delivery Plan">
+      <div class="guardrails-grid">
+        <div class="guardrail-card">
+          <div class="guardrail-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <h4>Strict CSS Isolation</h4>
+          <p>All generic selectors (.card, .legend, .field, .inner) are scoped inside .gc-land-forestry-map so Elementor and theme headers/footers remain untouched.</p>
+        </div>
+
+        <div class="guardrail-card">
+          <div class="guardrail-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h4>Conditional Script Enqueue</h4>
+          <p>Leaflet 1.9.4 and market-map.js load only when has_shortcode($post->post_content, 'goldcrest_market_map') is true, preventing conflicts with WP Go Maps Pro.</p>
+        </div>
+
+        <div class="guardrail-card">
+          <div class="guardrail-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <h4>REST + wp_mail + Mailchimp</h4>
+          <p>Enquiries post to /wp-json/goldcrest-map/v1/enquiry with nonce validation, dispatching wp_mail() to office@goldcrestlfg.com and tagging Buyer Inquiry.</p>
+        </div>
+      </div>
+
+      <div class="arch-grid">
+        <div class="panel-card">
+          <div class="panel-card-hd">
+            <h3>goldcrest-market-map.zip</h3>
+            <span class="badge badge-navy">Plugin Tree</span>
+          </div>
+          <div class="file-tree" id="arch-file-tree">
+            <button type="button" class="file-item is-active" data-file="main">
+              <span class="file-item-name">goldcrest-market-map.php</span>
+              <span class="file-item-tag">Core</span>
+            </button>
+            <button type="button" class="file-item" data-file="rest">
+              <span class="file-item-name">includes/class-gc-rest-enquiry.php</span>
+              <span class="file-item-tag">REST API</span>
+            </button>
+            <button type="button" class="file-item" data-file="sync">
+              <span class="file-item-name">includes/class-gc-sheet-sync.php</span>
+              <span class="file-item-tag">Admin + Sync</span>
+            </button>
+            <button type="button" class="file-item" data-file="css">
+              <span class="file-item-name">assets/css/market-map.css</span>
+              <span class="file-item-tag">Scoped CSS</span>
+            </button>
+            <button type="button" class="file-item" data-file="js">
+              <span class="file-item-name">assets/js/market-map.js</span>
+              <span class="file-item-tag">Leaflet 1.9.4</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-card-hd">
+            <h3 id="arch-code-title">goldcrest-market-map.php</h3>
+            <span class="badge badge-gold" id="arch-code-role">Shortcode &amp; Conditional Enqueue</span>
+          </div>
+          <pre class="gc-code-box" id="arch-code-view" style="min-height: 290px;"></pre>
+        </div>
+      </div>
+
+      <!-- Fixed-Price Milestone Delivery -->
+      <div class="panel-card">
+        <div class="panel-card-hd">
+          <h3>Fixed-Price Milestone Delivery Plan</h3>
+          <span class="badge badge-ok tabular">5 Hours Total @ £35/hr</span>
+        </div>
+
+        <div class="diff-table-wrap" style="margin-top: 0;">
+          <table class="gc-table">
+            <thead>
+              <tr>
+                <th>Milestone</th>
+                <th>Deliverables &amp; Acceptance Criteria</th>
+                <th>Effort</th>
+                <th>Fixed Fee</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Stage 1: Packaging + Staging Install &amp; REST Enquiry</strong></td>
+                <td>
+                  Strip outer document shell; scope all CSS under <code>.gc-land-forestry-map</code>; register <code>[goldcrest_market_map]</code> shortcode for Elementor with conditional script enqueue; implement <code>POST /wp-json/goldcrest-map/v1/enquiry</code> with nonce, sanitization, <code>wp_mail()</code>, and Mailchimp <code>Buyer Inquiry</code> tag; install on staging.
+                </td>
+                <td class="tabular">1.3 hrs</td>
+                <td class="tabular"><strong>£45</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Stage 2: OS/Esri Keys + Sheet/XLSX Admin Sync + Live Handover</strong></td>
+                <td>
+                  Build <code>Settings -&gt; Goldcrest Market Map</code> admin screen (<code>osApiKey</code>, <code>esriApiKey</code>, <code>otherMaxZoom</code>, recipient email); build Google Sheet CSV &amp; <code>.xlsx</code> <code>Map (public)</code> tab parser updating <code>wp_options</code> / JSON endpoint with zero JS edits; wire Crown copyright &amp; Natural Earth attributions; deploy live and hand over.
+                </td>
+                <td class="tabular">3.7 hrs</td>
+                <td class="tabular"><strong>£130</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="milestone-total-bar">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #C5D7E8; font-weight: 600;">Total Fixed-Price Delivery</div>
+            <div style="font-size: 13px; color: #FFFFFF; margin-top: 2px;">Ready-to-install <code>goldcrest-market-map.zip</code> + Staging Verification + Production Handover</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="milestone-total-num tabular">£175</div>
+            <div style="font-size: 11px; color: #DCE8F5;" class="tabular">5 hrs @ £35/hr fixed</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================================================================
+       "ACT FOR ME" ENQUIRY MODAL (OTHER / MM-REF PINS)
+  =================================================================== -->
+  <div class="gc-modal-scrim" id="gc-enquiry-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="gc-modal">
+      <div class="gc-modal-hd">
+        <div>
+          <h3 id="modal-title">Enquire About Wider Market Property</h3>
+          <div class="gc-modal-sub" id="modal-subtitle">Confidential buyer appraisal via Goldcrest Land &amp; Forestry Group</div>
+        </div>
+        <button type="button" class="gc-modal-close" id="modal-close" aria-label="Close enquiry modal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="gc-modal-bd">
+        <div class="gc-prop-summary">
+          <div>
+            <div class="gc-kv-label">Reference</div>
+            <div class="gc-kv-val tabular" id="m-ref">MM-043</div>
+          </div>
+          <div>
+            <div class="gc-kv-label">Category</div>
+            <div class="gc-kv-val" id="m-type">Commercial forest</div>
+          </div>
+          <div>
+            <div class="gc-kv-label">Area</div>
+            <div class="gc-kv-val tabular" id="m-area">166.55 ha / 411.55 ac</div>
+          </div>
+          <div>
+            <div class="gc-kv-label">Guide Price</div>
+            <div class="gc-kv-val tabular" id="m-guide">£1,150,000</div>
+          </div>
+        </div>
+
+        <form id="gc-enquiry-form" novalidate>
+          <div class="gc-form-grid">
+            <div class="gc-input-group">
+              <label for="enq-name">Full Name *</label>
+              <input type="text" id="enq-name" placeholder="e.g. Alistair Fraser" required>
+            </div>
+            <div class="gc-input-group">
+              <label for="enq-phone">Telephone</label>
+              <input type="tel" id="enq-phone" placeholder="+44 7700 900123" class="tabular">
+            </div>
+          </div>
+
+          <div class="gc-input-group">
+            <label for="enq-email">Email Address *</label>
+            <input type="email" id="enq-email" placeholder="buyer@example.co.uk" required>
+          </div>
+
+          <div class="gc-input-group">
+            <label for="enq-message">Enquiry Notes</label>
+            <textarea id="enq-message" rows="3" placeholder="Please send further particulars and advise on a buyer appraisal."></textarea>
+          </div>
+
+          <label class="gc-check-box">
+            <input type="checkbox" id="enq-act-for-me" checked>
+            <span>I would like Goldcrest to appraise this property and act for me as buyer</span>
+          </label>
+
+          <div class="gc-form-error" id="enq-error"></div>
+
+          <div class="gc-modal-actions">
+            <span class="badge badge-navy" id="enq-mc-badge">Mailchimp Tag: Buyer Inquiry</span>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-secondary" id="modal-cancel">Cancel</button>
+              <button type="submit" class="btn-gold">Submit Enquiry</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="gc-dispatch-preview" id="enq-dispatch-preview">
+          <div class="gc-dispatch-banner">
+            <span>200 OK · Dispatched via POST /wp-json/goldcrest-map/v1/enquiry</span>
+            <span class="tabular" id="enq-dispatch-recipient">To: office@goldcrestlfg.com</span>
+          </div>
+          <div class="gc-code-grid">
+            <div>
+              <div class="gc-code-label">REST JSON Payload</div>
+              <pre class="gc-code-box" id="enq-payload-json"></pre>
+            </div>
+            <div>
+              <div class="gc-code-label">wp_mail() Dispatch Preview</div>
+              <pre class="gc-code-box" id="enq-wpmail-preview"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         1. EMBEDDED REAL DATASET (35 REAL PINS FROM points.json)
+      ==================================================================== */
+      const BASE_POINTS = [
+        { ref: "", pin: "Goldcrest", name: "Locherlour Forest", status: "For sale", type: "Commercial forest", country: "Scotland", region: "Central Scotland & Argyll", ha: 105.24, ac: 260.05, guide: "Offers over £1,800,000", link: "https://goldcrestlfg.com/properties/locherlour-forest/", price: 1800000, lat: 56.39627, lon: -3.91231 },
+        { ref: "", pin: "Goldcrest", name: "Ballybrennan Forest", status: "For sale", type: "Commercial forest", country: "Scotland", region: "Central Scotland & Argyll", ha: 290.49, ac: 717.82, guide: "Offers over £2,500,000", link: "https://goldcrestlfg.com/properties/ballybrennan-forest/", price: 2500000, lat: 55.35706, lon: -5.66551 },
+        { ref: "", pin: "Goldcrest", name: "Balchimmy Plantation", status: "For sale", type: "Commercial forest; Carbon credits", country: "Scotland", region: "North East Scotland", ha: 229.12, ac: 566.17, guide: "Offers over £2,500,000", link: "https://goldcrestlfg.com/properties/balchimmy-plantation/", price: 2500000, lat: 57.19207, lon: -2.80605 },
+        { ref: "", pin: "Goldcrest", name: "Balchimmy Farm", status: "For sale", type: "Farm", country: "Scotland", region: "North East Scotland", ha: 110.51, ac: 273.08, guide: "Lots from £45,000 to £700,000", link: "https://goldcrestlfg.com/properties/balchimmy-farm/", price: 700000, lat: 57.19306, lon: -2.78105 },
+        { ref: "", pin: "Goldcrest", name: "Corriedow Planting Land", status: "For sale", type: "Planting land", country: "Scotland", region: "South Scotland", ha: 77.64, ac: 191.85, guide: "Offers over £525,000", link: "https://goldcrestlfg.com/properties/corriedow-planting-land/", price: 525000, lat: 55.22392, lon: -3.95433 },
+        { ref: "", pin: "Goldcrest", name: "Glentruim Hill", status: "For sale", type: "Commercial forest", country: "Scotland", region: "Highlands & Islands", ha: 414.8, ac: 1024.99, guide: "Offers over £995,000", link: "https://goldcrestlfg.com/properties/glentrium-hill/", price: 995000, lat: 56.99429, lon: -4.21096 },
+        { ref: "", pin: "Goldcrest", name: "Tombane Woodland", status: "For sale", type: "Commercial forest", country: "Scotland", region: "Central Scotland & Argyll", ha: 59.6, ac: 147.27, guide: "Offers over £495,000", link: "https://goldcrestlfg.com/properties/tombane-woodland/", price: 495000, lat: 56.66149, lon: -3.71269 },
+        { ref: "", pin: "Goldcrest", name: "Glenquicken Forest", status: "For sale", type: "Commercial forest", country: "Scotland", region: "South Scotland", ha: 249.68, ac: 616.97, guide: "Offers over £2,950,000", link: "https://goldcrestlfg.com/properties/glenquicken-forest/", price: 2950000, lat: 54.90508, lon: -4.30535 },
+        { ref: "", pin: "Goldcrest", name: "Glenquicken House", status: "For sale", type: "House & land", country: "Scotland", region: "South Scotland", ha: 71.47, ac: 176.61, guide: "Offers over £795,000", link: "https://goldcrestlfg.com/properties/glenquicken-house/", price: 795000, lat: 54.90849, lon: -4.28035 },
+        { ref: "", pin: "Goldcrest", name: "Duchess Woods", status: "For sale", type: "Amenity wood", country: "Scotland", region: "Central Scotland & Argyll", ha: 20.51, ac: 50.68, guide: "Offers over £70,000", link: "https://goldcrestlfg.com/properties/duchess-wood/", price: 70000, lat: 56.01358, lon: -4.74916 },
+        { ref: "", pin: "Goldcrest", name: "Ardochrig Wood", status: "For sale", type: "Commercial forest", country: "Scotland", region: "South Scotland", ha: 20.68, ac: 51.1, guide: "Offers over £450,000", link: "https://goldcrestlfg.com/properties/ardochrig-wood/", price: 450000, lat: 55.69339, lon: -4.16445 },
+        { ref: "", pin: "Goldcrest", name: "Craigmill Forest Estate", status: "For sale", type: "Commercial forest", country: "Scotland", region: "North East Scotland", ha: 1311.0, ac: 3239.55, guide: "Fixed price £5,750,000", link: "https://goldcrestlfg.com/properties/craigmill-forest-estate/", price: 5750000, lat: 57.53651, lon: -3.51584 },
+        { ref: "", pin: "Goldcrest", name: "Affrusk Woodland", status: "For sale", type: "Amenity wood", country: "Scotland", region: "North East Scotland", ha: 4.54, ac: 11.22, guide: "Offers over £75,000", link: "https://goldcrestlfg.com/properties/affrusk-woodland/", price: 75000, lat: 57.03443, lon: -2.49773 },
+        { ref: "", pin: "Goldcrest", name: "Glenkirk Wood", status: "For sale", type: "Commercial forest", country: "Scotland", region: "Highlands & Islands", ha: 103.96, ac: 256.89, guide: "Offers over £700,000", link: "https://goldcrestlfg.com/properties/glenkirk-wood/", price: 700000, lat: 57.36078, lon: -3.97785 },
+        { ref: "MM-001", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "England", region: "South East England", ha: 0.49, ac: 1.2, guide: "£140,000", link: "", price: 140000, lat: 50.94, lon: 0.64 },
+        { ref: "MM-003", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "Wales", region: "Wales", ha: 4.09, ac: 10.11, guide: "Fixed price £139,000", link: "", price: 139000, lat: 53.11, lon: -4.11 },
+        { ref: "MM-008", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "England", region: "North of England", ha: 11.57, ac: 28.6, guide: "Guide price £175,000", link: "", price: 175000, lat: 54.55, lon: -2.61 },
+        { ref: "MM-017", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "England", region: "East of England", ha: 3.37, ac: 8.33, guide: "Fixed price £159,000", link: "", price: 159000, lat: 51.95, lon: 0.91 },
+        { ref: "MM-019", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "England", region: "Midlands", ha: 2.63, ac: 6.5, guide: "Fixed price £125,000", link: "", price: 125000, lat: 52.13, lon: -3.07 },
+        { ref: "MM-039", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "Scotland", region: "Highlands & Islands", ha: 14.57, ac: 36.0, guide: "Fixed price £215,000", link: "", price: 215000, lat: 58.47, lon: -3.55 },
+        { ref: "MM-041", pin: "Other", name: "", status: "For sale", type: "Commercial forest", country: "Wales", region: "Wales", ha: 22.26, ac: 55.0, guide: "Guide price £250,000", link: "", price: 250000, lat: 51.96, lon: -4.01 },
+        { ref: "MM-043", pin: "Other", name: "", status: "For sale", type: "Commercial forest", country: "Scotland", region: "Central Scotland & Argyll", ha: 166.55, ac: 411.55, guide: "£1,150,000", link: "", price: 1150000, lat: 55.95, lon: -5.17 },
+        { ref: "MM-044", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "Scotland", region: "Central Scotland & Argyll", ha: 10.93, ac: 27.0, guide: "Fixed price £229,000", link: "", price: 229000, lat: 56.15, lon: -4.36 },
+        { ref: "MM-045", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "Scotland", region: "Highlands & Islands", ha: 14.97, ac: 37.0, guide: "Fixed price £215,000", link: "", price: 215000, lat: 58.475, lon: -3.559 },
+        { ref: "MM-046", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "Scotland", region: "Highlands & Islands", ha: 3.64, ac: 9.0, guide: "Fixed price £125,000", link: "", price: 125000, lat: 57.27, lon: -4.51 },
+        { ref: "MM-047", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "England", region: "South East England", ha: 2.63, ac: 6.5, guide: "£100,000", link: "", price: 100000, lat: 50.9, lon: 0.14 },
+        { ref: "MM-048", pin: "Other", name: "", status: "For sale", type: "Amenity wood", country: "England", region: "South East England", ha: 14.32, ac: 35.39, guide: "Guide price £280,000", link: "", price: 280000, lat: 50.87, lon: 0.35 },
+        { ref: "MM-072", pin: "Other", name: "", status: "For sale", type: "Commercial forest", country: "England", region: "South West England", ha: 65.99, ac: 163.06, guide: "Guide price £750,000", link: "", price: 750000, lat: 50.69, lon: -3.25 },
+        { ref: "MM-123", pin: "Other", name: "", status: "For sale", type: "Natural capital", country: "Scotland", region: "Highlands & Islands", ha: 2866.0, ac: 7082.03, guide: "Offers over £6,500,000", link: "", price: 6500000, lat: 56.89, lon: -4.9 },
+        { ref: "MM-131", pin: "Other", name: "", status: "For sale", type: "Commercial forest", country: "England", region: "East of England", ha: 165.62, ac: 409.26, guide: "Offers around £2,295,000", link: "", price: 2295000, lat: 53.57, lon: -0.56 },
+        { ref: "MM-161", pin: "Other", name: "", status: "For sale", type: "Estate; Commercial forest; Carbon credits", country: "Scotland", region: "Highlands & Islands", ha: 1470.35, ac: 3633.31, guide: "Offers over £6,900,000", link: "", price: 6900000, lat: 57.08, lon: -4.05 },
+        { ref: "MM-165", pin: "Other", name: "", status: "For sale", type: "Estate", country: "Scotland", region: "South Scotland", ha: 189.8, ac: 469.01, guide: "Offers over £3,400,000", link: "", price: 3400000, lat: 55.16, lon: -3.72 },
+        { ref: "MM-182", pin: "Other", name: "", status: "For sale", type: "Estate", country: "Scotland", region: "South Scotland", ha: 1400.31, ac: 3460.24, guide: "Offers over £15,000,000", link: "", price: 15000000, lat: 55.73, lon: -3.19 },
+        { ref: "MM-183", pin: "Other", name: "", status: "For sale", type: "Estate", country: "Scotland", region: "Highlands & Islands", ha: 333.88, ac: 825.03, guide: "Offers over £3,900,000", link: "", price: 3900000, lat: 57.6, lon: -4.43 },
+        { ref: "MM-184", pin: "Other", name: "", status: "For sale", type: "Estate", country: "Scotland", region: "Highlands & Islands", ha: 4779.75, ac: 11811.01, guide: "Offers over £6,000,000", link: "", price: 6000000, lat: 57.22, lon: -4.62 }
+      ];
+
+      const COUNTRY_REGIONS = {
+        Scotland: ["South Scotland", "Central Scotland & Argyll", "North East Scotland", "Highlands & Islands"],
+        England: ["North of England", "Midlands", "East of England", "South East England", "South West England"],
+        Wales: ["Wales"]
+      };
+
+      const CAT_COLOR = {
+        "Commercial forest": "#0F4C81",
+        "Amenity wood": "#3B7A57",
+        "Estate": "#B88714",
+        "Carbon credits": "#2E7D6B",
+        "Natural capital": "#5D6D7E",
+        "Farm": "#8D6E43",
+        "Planting land": "#4A7C59",
+        "House & land": "#335C81"
+      };
+
+      /* ====================================================================
+         2. SHARED WORKBENCH STATE
+      ==================================================================== */
+      const state = {
+        points: BASE_POINTS.map((p) => Object.assign({}, p)),
+        pinFilter: "all",
+        typeFilter: "",
+        countryFilter: "",
+        regionFilter: "",
+        haMin: null,
+        haMax: null,
+        priceMin: null,
+        priceMax: null,
+        basemap: "topo",
+        activeModalPoint: null,
+        config: {
+          osApiKey: "os_live_gc_4f91b8a2c7e03d19",
+          osStyle: "Light_3857",
+          esriApiKey: "esri_tok_gc_88a2e019c4d7",
+          otherMaxZoom: 12,
+          enquiryEndpoint: "/wp-json/goldcrest-map/v1/enquiry",
+          enquiryRecipientEmail: "office@goldcrestlfg.com",
+          mailchimpTag: "Buyer Inquiry"
+        }
+      };
+
+      /* ====================================================================
+         3. VIEW SWITCHER
+      ==================================================================== */
+      const tabButtons = document.querySelectorAll(".wb-tab");
+      const views = {
+        preview: document.getElementById("view-preview"),
+        admin: document.getElementById("view-admin"),
+        arch: document.getElementById("view-arch")
+      };
+
+      function switchView(viewKey) {
+        tabButtons.forEach((btn) => {
+          btn.classList.toggle("is-active", btn.dataset.view === viewKey);
+        });
+        Object.keys(views).forEach((k) => {
+          views[k].classList.toggle("is-active", k === viewKey);
+        });
+        if (viewKey === "preview" && map) {
+          setTimeout(() => map.invalidateSize(), 60);
+        }
+      }
+
+      tabButtons.forEach((btn) => {
+        btn.addEventListener("click", () => switchView(btn.dataset.view));
+      });
+
+      /* ====================================================================
+         4. LEAFLET 1.9.4 MAP INITIALIZATION & BASEMAPS
+      ==================================================================== */
+      const UK_BOUNDS = L.latLngBounds([49.8, -8.4], [60.95, 1.9]);
+      const map = L.map("gc-map", {
+        center: [54.8, -3.5],
+        zoom: 6,
+        minZoom: 5,
+        maxZoom: 17,
+        zoomControl: false,
+        maxBounds: UK_BOUNDS.pad(0.25),
+        attributionControl: true
+      });
+
+      const topoBase = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 17, maxNativeZoom: 16, attribution: "Esri, DeLorme, Natural Earth | OS Data Hub Ready" }
+      );
+      const topoRef = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 17, maxNativeZoom: 16 }
+      );
+      const satBase = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 17, maxNativeZoom: 17, attribution: "Esri World Imagery, Maxar, Earthstar Geographics" }
+      );
+      const satRef = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 17, maxNativeZoom: 17 }
+      );
+
+      const topoGroup = L.layerGroup([topoBase, topoRef]).addTo(map);
+      const satGroup = L.layerGroup([satBase, satRef]);
+
+      const goldcrestLayer = L.layerGroup().addTo(map);
+      const otherLayer = L.layerGroup().addTo(map);
+
+      /* ====================================================================
+         5. FILTERING, PIN RENDERING & otherMaxZoom LOGIC
+      ==================================================================== */
+      function fmtNumber(val, decimals) {
+        return Number(val).toLocaleString("en-GB", {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+        });
+      }
+
+      function populateRegions() {
+        const regionSelect = document.getElementById("f-region");
+        const prev = state.regionFilter;
+        let list = [];
+        if (state.countryFilter && COUNTRY_REGIONS[state.countryFilter]) {
+          list = COUNTRY_REGIONS[state.countryFilter];
+        } else {
+          list = [].concat(
+            COUNTRY_REGIONS.Scotland,
+            COUNTRY_REGIONS.England,
+            COUNTRY_REGIONS.Wales
+          );
+        }
+        regionSelect.innerHTML = '<option value="">All Regions</option>';
+        list.forEach((r) => {
+          const opt = document.createElement("option");
+          opt.value = r;
+          opt.textContent = r;
+          regionSelect.appendChild(opt);
+        });
+        if (list.includes(prev)) {
+          regionSelect.value = prev;
+        } else {
+          state.regionFilter = "";
+          regionSelect.value = "";
+        }
+      }
+
+      function matchesFilters(p) {
+        if (state.pinFilter !== "all" && p.pin !== state.pinFilter) return false;
+        if (state.typeFilter) {
+          const cats = p.type.split(";").map((s) => s.trim());
+          if (!cats.includes(state.typeFilter)) return false;
+        }
+        if (state.countryFilter && p.country !== state.countryFilter) return false;
+        if (state.regionFilter && p.region !== state.regionFilter) return false;
+        if (state.haMin !== null && p.ha < state.haMin) return false;
+        if (state.haMax !== null && p.ha > state.haMax) return false;
+        if (state.priceMin !== null && p.price < state.priceMin) return false;
+        if (state.priceMax !== null && p.price > state.priceMax) return false;
+        return true;
+      }
+
+      function createMarkerIcon(p) {
+        if (p.pin === "Goldcrest") {
+          return L.divIcon({
+            className: "gc-pin-wrap",
+            html: '<div class="gc-pin-gold"></div>',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+          });
+        }
+        return L.divIcon({
+          className: "gc-pin-wrap",
+          html: '<div class="gc-pin-other"></div>',
+          iconSize: [14, 14],
+          iconAnchor: [7, 7]
+        });
+      }
+
+      function updateZoomState() {
+        const z = map.getZoom();
+        const maxZ = state.config.otherMaxZoom;
+        document.getElementById("gc-zoom-readout").textContent = "z" + z;
+        document.getElementById("gc-zoom-notice-title").textContent =
+          "Wider-market pins hidden above zoom " + maxZ;
+        document.getElementById("gc-zoom-back-btn").textContent = "Zoom back to z" + maxZ;
+        document.getElementById("gc-legend-other-label").textContent =
+          "Wider Market MM-Ref (Approx. up to z" + maxZ + ")";
+        document.getElementById("wb-maxzoom-pill").textContent = "otherMaxZoom: " + maxZ;
+
+        const hideOther = z > maxZ;
+        const noticeEl = document.getElementById("gc-zoom-notice");
+        if (hideOther) {
+          if (map.hasLayer(otherLayer)) map.removeLayer(otherLayer);
+          noticeEl.classList.add("is-visible");
+        } else {
+          if (!map.hasLayer(otherLayer)) otherLayer.addTo(map);
+          noticeEl.classList.remove("is-visible");
+        }
+      }
+
+      function renderPins() {
+        goldcrestLayer.clearLayers();
+        otherLayer.clearLayers();
+
+        const filtered = state.points.filter(matchesFilters);
+        let gcCount = 0;
+        let otherCount = 0;
+
+        filtered.forEach((p) => {
+          const marker = L.marker([p.lat, p.lon], {
+            icon: createMarkerIcon(p),
+            zIndexOffset: p.pin === "Goldcrest" ? 400 : 100
+          });
+
+          const tipText =
+            p.pin === "Goldcrest"
+              ? p.name + " · " + fmtNumber(p.ha, 2) + " ha · " + p.guide
+              : p.ref + " · " + p.type + " · " + p.guide;
+
+          marker.bindTooltip(tipText, {
+            direction: "top",
+            offset: p.pin === "Goldcrest" ? [0, -10] : [0, -6]
+          });
+
+          marker.on("click", () => {
+            if (p.pin === "Goldcrest") {
+              openPropertyCard(p);
+            } else {
+              closePropertyCard();
+              openEnquiryModal(p);
+            }
+          });
+
+          if (p.pin === "Goldcrest") {
+            gcCount += 1;
+            marker.addTo(goldcrestLayer);
+          } else {
+            otherCount += 1;
+            marker.addTo(otherLayer);
+          }
+        });
+
+        document.getElementById("gc-count-main").textContent =
+          "Showing " + filtered.length + " of " + state.points.length + " properties";
+        document.getElementById("gc-count-split").textContent =
+          " (" + gcCount + " Goldcrest · " + otherCount + " Wider Market)";
+        document.getElementById("wb-total-pins-pill").textContent =
+          state.points.length + " Real Pins Active";
+
+        updateZoomState();
+      }
+
+      /* ====================================================================
+         6. GOLDCREST PROPERTY CARD & "ACT FOR ME" MODAL
+      ==================================================================== */
+      function openPropertyCard(p) {
+        const card = document.getElementById("gc-property-card");
+        document.getElementById("card-kicker").textContent = "Goldcrest Exclusive · " + p.country;
+        document.getElementById("card-title").textContent = p.name;
+        document.getElementById("card-region").textContent = p.region;
+        document.getElementById("card-status").textContent = p.status;
+        document.getElementById("card-area").textContent =
+          fmtNumber(p.ha, 2) + " ha / " + fmtNumber(p.ac, 2) + " ac";
+        document.getElementById("card-price").textContent = p.guide;
+        document.getElementById("card-coords").textContent =
+          p.lat.toFixed(5) + ", " + p.lon.toFixed(5) + " (Exact)";
+
+        const linkEl = document.getElementById("card-link");
+        linkEl.href = p.link || "https://goldcrestlfg.com/properties/";
+
+        const tagsEl = document.getElementById("card-tags");
+        tagsEl.innerHTML = "";
+        p.type.split(";").forEach((rawCat) => {
+          const cat = rawCat.trim();
+          const pill = document.createElement("span");
+          pill.className = "gc-type-pill";
+          const dot = document.createElement("span");
+          dot.className = "gc-type-dot";
+          dot.style.backgroundColor = CAT_COLOR[cat] || "#0F4C81";
+          pill.appendChild(dot);
+          pill.appendChild(document.createTextNode(cat));
+          tagsEl.appendChild(pill);
+        });
+
+        card.classList.add("is-open");
+      }
+
+      function closePropertyCard() {
+        document.getElementById("gc-property-card").classList.remove("is-open");
+      }
+
+      document.getElementById("card-close").addEventListener("click", closePropertyCard);
+
+      function openEnquiryModal(p) {
+        state.activeModalPoint = p;
+        document.getElementById("modal-title").textContent =
+          "Act For Me Enquiry: " + p.ref;
+        document.getElementById("modal-subtitle").textContent =
+          p.region + ", " + p.country + " · Approximate coordinates (" + p.lat.toFixed(2) + ", " + p.lon.toFixed(2) + ")";
+        document.getElementById("m-ref").textContent = p.ref;
+        document.getElementById("m-type").textContent = p.type;
+        document.getElementById("m-area").textContent =
+          fmtNumber(p.ha, 2) + " ha / " + fmtNumber(p.ac, 2) + " ac";
+        document.getElementById("m-guide").textContent = p.guide;
+
+        document.getElementById("enq-error").classList.remove("is-visible");
+        document.getElementById("enq-dispatch-preview").classList.remove("is-visible");
+        document.getElementById("enq-mc-badge").textContent =
+          "Mailchimp Tag: " + state.config.mailchimpTag;
+        document.getElementById("enq-message").value =
+          "I would like further details on " + p.ref + " (" + p.region + ") and to discuss Goldcrest acting on my behalf.";
+
+        document.getElementById("gc-enquiry-modal").classList.add("is-open");
+      }
+
+      function closeEnquiryModal() {
+        document.getElementById("gc-enquiry-modal").classList.remove("is-open");
+      }
+
+      document.getElementById("modal-close").addEventListener("click", closeEnquiryModal);
+      document.getElementById("modal-cancel").addEventListener("click", closeEnquiryModal);
+      document.getElementById("gc-enquiry-modal").addEventListener("click", (e) => {
+        if (e.target.id === "gc-enquiry-modal") closeEnquiryModal();
+      });
+
+      document.getElementById("gc-enquiry-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const p = state.activeModalPoint;
+        if (!p) return;
+
+        const name = document.getElementById("enq-name").value.trim();
+        const phone = document.getElementById("enq-phone").value.trim();
+        const email = document.getElementById("enq-email").value.trim();
+        const message = document.getElementById("enq-message").value.trim();
+        const actForMe = document.getElementById("enq-act-for-me").checked;
+        const errEl = document.getElementById("enq-error");
+
+        if (name.length < 2) {
+          errEl.textContent = "Please enter your full name before submitting.";
+          errEl.classList.add("is-visible");
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          errEl.textContent = "Please enter a valid email address.";
+          errEl.classList.add("is-visible");
+          return;
+        }
+        errEl.classList.remove("is-visible");
+
+        const payload = {
+          ref: p.ref,
+          name: name,
+          phone: phone || "(not provided)",
+          email: email,
+          message: message,
+          actForMe: actForMe,
+          property: p.ref + " · " + p.type.split(";").map((s) => s.trim()).join(", ") + " · " + fmtNumber(p.ha, 2) + " ha · " + p.guide,
+          mailchimp: {
+            tag: state.config.mailchimpTag,
+            merge_fields: {
+              EMAIL: email,
+              FNAME: name.split(" ")[0] || name,
+              LNAME: name.split(" ").slice(1).join(" ") || "",
+              PHONE: phone
+            }
+          }
+        };
+
+        const wpMailPreview = [
+          "wp_mail(",
+          "  to: '" + state.config.enquiryRecipientEmail + "',",
+          "  subject: '[Goldcrest Market Map] " + (actForMe ? "Act For Me" : "Property") + " Enquiry: " + p.ref + "',",
+          "  headers: ['Content-Type: text/plain; charset=UTF-8', 'Reply-To: " + name + " <" + email + ">'],",
+          "  body: |",
+          "    Property: " + payload.property,
+          "    Region:   " + p.region + ", " + p.country,
+          "    Buyer:    " + name + " (" + email + (phone ? ", " + phone : "") + ")",
+          "    ActForMe: " + (actForMe ? "YES - Buyer Appraisal Requested" : "No"),
+          "    Notes:    " + message,
+          ");"
+        ].join("\n");
+
+        document.getElementById("enq-dispatch-recipient").textContent =
+          "To: " + state.config.enquiryRecipientEmail;
+        document.getElementById("enq-payload-json").textContent = JSON.stringify(payload, null, 2);
+        document.getElementById("enq-wpmail-preview").textContent = wpMailPreview;
+        document.getElementById("enq-dispatch-preview").classList.add("is-visible");
+      });
+
+      /* ====================================================================
+         7. FILTER & MAP TOOLBAR EVENT BINDINGS
+      ==================================================================== */
+      document.querySelectorAll("[data-pin-filter]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-pin-filter]").forEach((b) => b.classList.remove("is-on"));
+          btn.classList.add("is-on");
+          state.pinFilter = btn.dataset.pinFilter;
+          renderPins();
+        });
+      });
+
+      document.getElementById("f-type").addEventListener("change", (e) => {
+        state.typeFilter = e.target.value;
+        renderPins();
+      });
+
+      document.getElementById("f-country").addEventListener("change", (e) => {
+        state.countryFilter = e.target.value;
+        populateRegions();
+        renderPins();
+      });
+
+      document.getElementById("f-region").addEventListener("change", (e) => {
+        state.regionFilter = e.target.value;
+        renderPins();
+      });
+
+      document.getElementById("f-ha-min").addEventListener("input", (e) => {
+        state.haMin = e.target.value === "" ? null : Number(e.target.value);
+        document.getElementById("f-quick-ha").value = "";
+        renderPins();
+      });
+
+      document.getElementById("f-ha-max").addEventListener("input", (e) => {
+        state.haMax = e.target.value === "" ? null : Number(e.target.value);
+        document.getElementById("f-quick-ha").value = "";
+        renderPins();
+      });
+
+      document.getElementById("f-price-min").addEventListener("input", (e) => {
+        state.priceMin = e.target.value === "" ? null : Number(e.target.value);
+        renderPins();
+      });
+
+      document.getElementById("f-price-max").addEventListener("input", (e) => {
+        state.priceMax = e.target.value === "" ? null : Number(e.target.value);
+        renderPins();
+      });
+
+      document.getElementById("f-quick-ha").addEventListener("change", (e) => {
+        const v = e.target.value;
+        const minInput = document.getElementById("f-ha-min");
+        const maxInput = document.getElementById("f-ha-max");
+        if (!v) {
+          state.haMin = null;
+          state.haMax = null;
+          minInput.value = "";
+          maxInput.value = "";
+        } else {
+          const parts = v.split("-");
+          state.haMin = parts[0] === "" ? null : Number(parts[0]);
+          state.haMax = parts[1] === "" ? null : Number(parts[1]);
+          minInput.value = state.haMin !== null ? String(state.haMin) : "";
+          maxInput.value = state.haMax !== null ? String(state.haMax) : "";
+        }
+        renderPins();
+      });
+
+      document.getElementById("gc-btn-reset").addEventListener("click", () => {
+        state.pinFilter = "all";
+        state.typeFilter = "";
+        state.countryFilter = "";
+        state.regionFilter = "";
+        state.haMin = null;
+        state.haMax = null;
+        state.priceMin = null;
+        state.priceMax = null;
+        document.querySelectorAll("[data-pin-filter]").forEach((b) => {
+          b.classList.toggle("is-on", b.dataset.pinFilter === "all");
+        });
+        document.getElementById("f-type").value = "";
+        document.getElementById("f-country").value = "";
+        populateRegions();
+        document.getElementById("f-ha-min").value = "";
+        document.getElementById("f-ha-max").value = "";
+        document.getElementById("f-price-min").value = "";
+        document.getElementById("f-price-max").value = "";
+        document.getElementById("f-quick-ha").value = "";
+        closePropertyCard();
+        renderPins();
+      });
+
+      /* Basemap switcher */
+      document.querySelectorAll("[data-basemap]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const mode = btn.dataset.basemap;
+          state.basemap = mode;
+          document.querySelectorAll("[data-basemap]").forEach((b) => {
+            b.classList.toggle("is-active", b.dataset.basemap === mode);
+          });
+          if (mode === "sat") {
+            if (map.hasLayer(topoGroup)) map.removeLayer(topoGroup);
+            if (!map.hasLayer(satGroup)) satGroup.addTo(map);
+            document.getElementById("gc-basemap-attr").textContent =
+              "Basemap: Esri World Imagery (Satellite)";
+          } else {
+            if (map.hasLayer(satGroup)) map.removeLayer(satGroup);
+            if (!map.hasLayer(topoGroup)) topoGroup.addTo(map);
+            document.getElementById("gc-basemap-attr").textContent =
+              "Basemap: Light Topo (OS " + state.config.osStyle + " Ready)";
+          }
+        });
+      });
+
+      document.getElementById("gc-zoom-in").addEventListener("click", () => map.zoomIn());
+      document.getElementById("gc-zoom-out").addEventListener("click", () => map.zoomOut());
+      document.getElementById("gc-fit-uk").addEventListener("click", () => {
+        map.fitBounds(UK_BOUNDS, { padding: [16, 16] });
+      });
+      document.getElementById("gc-test-z13").addEventListener("click", () => {
+        const targetZ = Math.max(state.config.otherMaxZoom + 1, 13);
+        map.setView([56.15, -4.36], Math.min(targetZ, 17));
+      });
+      document.getElementById("gc-zoom-back-btn").addEventListener("click", () => {
+        map.setZoom(state.config.otherMaxZoom);
+      });
+
+      map.on("zoomend", updateZoomState);
+
+      /* ====================================================================
+         8. VIEW 2: WP ADMIN SETTINGS & SHEET SYNC
+      ==================================================================== */
+      function renderConfigPreview() {
+        const localized = {
+          osApiKey: state.config.osApiKey ? state.config.osApiKey.slice(0, 10) + "..." : "",
+          osStyle: state.config.osStyle,
+          osMaxNativeZoom: 16,
+          esriApiKey: state.config.esriApiKey ? state.config.esriApiKey.slice(0, 10) + "..." : "",
+          otherMaxZoom: state.config.otherMaxZoom,
+          enquiryEndpoint: state.config.enquiryEndpoint,
+          enquiryRecipientEmail: state.config.enquiryRecipientEmail,
+          mailchimpTag: state.config.mailchimpTag
+        };
+        document.getElementById("cfg-json-preview").textContent =
+          "window.GC_MAP_CONFIG = " + JSON.stringify(localized, null, 2) + ";";
+        if (state.basemap === "topo") {
+          document.getElementById("gc-basemap-attr").textContent =
+            "Basemap: Light Topo (OS " + state.config.osStyle + " Ready)";
+        }
+      }
+
+      document.getElementById("wp-settings-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        state.config.osApiKey = document.getElementById("cfg-os-key").value.trim();
+        state.config.osStyle = document.getElementById("cfg-os-style").value;
+        state.config.esriApiKey = document.getElementById("cfg-esri-key").value.trim();
+        state.config.otherMaxZoom = Math.min(
+          17,
+          Math.max(5, Number(document.getElementById("cfg-other-max-zoom").value) || 12)
+        );
+        state.config.enquiryRecipientEmail =
+          document.getElementById("cfg-email").value.trim() || "office@goldcrestlfg.com";
+        state.config.mailchimpTag =
+          document.getElementById("cfg-mc-tag").value.trim() || "Buyer Inquiry";
+
+        renderConfigPreview();
+        updateZoomState();
+
+        document.getElementById("admin-toast-text").textContent =
+          "Saved to wp_options (otherMaxZoom=" +
+          state.config.otherMaxZoom +
+          ", recipient=" +
+          state.config.enquiryRecipientEmail +
+          "). Live map updated.";
+        document.getElementById("admin-toast").classList.add("is-visible");
+      });
+
+      document.getElementById("cfg-reset-defaults").addEventListener("click", () => {
+        document.getElementById("cfg-os-key").value = "os_live_gc_4f91b8a2c7e03d19";
+        document.getElementById("cfg-os-style").value = "Light_3857";
+        document.getElementById("cfg-esri-key").value = "esri_tok_gc_88a2e019c4d7";
+        document.getElementById("cfg-other-max-zoom").value = "12";
+        document.getElementById("cfg-email").value = "office@goldcrestlfg.com";
+        document.getElementById("cfg-mc-tag").value = "Buyer Inquiry";
+        document.getElementById("wp-settings-form").dispatchEvent(new Event("submit"));
+      });
+
+      document.getElementById("admin-goto-preview").addEventListener("click", () => {
+        switchView("preview");
+      });
+
+      document.getElementById("sync-source-type").addEventListener("change", (e) => {
+        document.getElementById("sync-url-wrap").style.display =
+          e.target.value === "gsheet" ? "flex" : "none";
+      });
+
+      function parseCsvRows(csvText) {
+        const lines = csvText
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+        if (lines.length < 2) return [];
+        const headers = lines[0].split(",").map((h) => h.trim());
+        return lines.slice(1).map((line) => {
+          const cols = line.split(",");
+          const obj = {};
+          headers.forEach((h, idx) => {
+            obj[h] = (cols[idx] || "").trim();
+          });
+          return {
+            ref: obj.ref || "",
+            pin: obj.pin || "Other",
+            name: obj.name || "",
+            status: obj.status || "For sale",
+            type: obj.type || "Amenity wood",
+            country: obj.country || "Scotland",
+            region: obj.region || "Highlands & Islands",
+            ha: Number(obj.ha) || 0,
+            ac: Number(obj.ac) || 0,
+            guide: obj.guide || "",
+            link: obj.link || "",
+            price: Number(obj.price) || 0,
+            lat: Number(obj.lat) || 56.0,
+            lon: Number(obj.lon) || -4.0
+          };
+        });
+      }
+
+      document.getElementById("btn-simulate-sync").addEventListener("click", () => {
+        const rows = parseCsvRows(document.getElementById("sync-csv-input").value);
+        const working = BASE_POINTS.map((p) => Object.assign({}, p));
+        let added = 0;
+        let updated = 0;
+        let removed = 0;
+        const diffRows = [];
+
+        rows.forEach((row) => {
+          const key = row.pin === "Goldcrest" ? row.name : row.ref;
+          const idx = working.findIndex((w) => (w.pin === "Goldcrest" ? w.name : w.ref) === key);
+
+          if (row.status.toLowerCase() !== "for sale") {
+            if (idx !== -1) {
+              working.splice(idx, 1);
+              removed += 1;
+              diffRows.push({
+                action: "Excluded",
+                badge: "badge-gold",
+                title: key,
+                region: row.region,
+                detail: "Status changed to '" + row.status + "' (removed from public map)"
+              });
+            }
+            return;
+          }
+
+          if (row.pin === "Other") {
+            row.lat = Number(row.lat.toFixed(2));
+            row.lon = Number(row.lon.toFixed(2));
+          }
+
+          if (idx !== -1) {
+            const oldGuide = working[idx].guide;
+            working[idx] = row;
+            updated += 1;
+            diffRows.push({
+              action: "Updated",
+              badge: "badge-navy",
+              title: key,
+              region: row.region,
+              detail: oldGuide + " -> " + row.guide
+            });
+          } else {
+            working.push(row);
+            added += 1;
+            diffRows.push({
+              action: "Added",
+              badge: "badge-ok",
+              title: key,
+              region: row.region,
+              detail: row.type + " · " + fmtNumber(row.ha, 2) + " ha · " + row.guide
+            });
+          }
+        });
+
+        state.points = working;
+        renderPins();
+
+        document.getElementById("diff-added").textContent = "+" + added;
+        document.getElementById("diff-updated").textContent = String(updated);
+        document.getElementById("diff-removed").textContent = "-" + removed;
+
+        const tbody = document.getElementById("sync-diff-tbody");
+        tbody.innerHTML = "";
+        diffRows.forEach((d) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML =
+            '<td><span class="badge ' + d.badge + '">' + d.action + '</span></td>' +
+            '<td class="tabular"><strong>' + d.title + '</strong></td>' +
+            '<td>' + d.region + '</td>' +
+            '<td class="tabular">' + d.detail + '</td>';
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("sync-results").style.display = "block";
+        document.getElementById("admin-toast-text").textContent =
+          "Sheet sync complete: " + working.length + " active 'For sale' pins cached to wp_options and live map.";
+        document.getElementById("admin-toast").classList.add("is-visible");
+      });
+
+      document.getElementById("btn-reset-sync").addEventListener("click", () => {
+        state.points = BASE_POINTS.map((p) => Object.assign({}, p));
+        renderPins();
+        document.getElementById("sync-results").style.display = "none";
+        document.getElementById("admin-toast-text").textContent =
+          "Restored baseline 35 verified pins from points.json.";
+        document.getElementById("admin-toast").classList.add("is-visible");
+      });
+
+      /* ====================================================================
+         9. VIEW 3: PLUGIN FILE TREE CODE INSPECTOR
+      ==================================================================== */
+      const PLUGIN_FILES = {
+        main: {
+          title: "goldcrest-market-map.php",
+          role: "Shortcode & Conditional Enqueue",
+          code: [
+            "<?php",
+            "/**",
+            " * Plugin Name: Goldcrest Land & Forestry Market Map",
+            " * Description: Interactive UK Land & Forestry map shortcode for Elementor.",
+            " * Version: 1.0.0",
+            " * Author: JJD Works (Jack Duckworth)",
+            " */",
+            "if ( ! defined( 'ABSPATH' ) ) exit;",
+            "",
+            "require_once plugin_dir_path( __FILE__ ) . 'includes/class-gc-rest-enquiry.php';",
+            "require_once plugin_dir_path( __FILE__ ) . 'includes/class-gc-sheet-sync.php';",
+            "",
+            "add_action( 'wp_enqueue_scripts', function () {",
+            "    global $post;",
+            "    if ( ! is_a( $post, 'WP_Post' ) || ! has_shortcode( $post->post_content, 'goldcrest_market_map' ) ) {",
+            "        return; // Prevent Leaflet/CSS loading on WP Go Maps Pro pages",
+            "    }",
+            "    wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4' );",
+            "    wp_enqueue_style( 'gc-market-map', plugins_url( 'assets/css/market-map.css', __FILE__ ), [ 'leaflet' ], '1.0.0' );",
+            "    wp_enqueue_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true );",
+            "    wp_enqueue_script( 'gc-market-map', plugins_url( 'assets/js/market-map.js', __FILE__ ), [ 'leaflet' ], '1.0.0', true );",
+            "",
+            "    $opts = get_option( 'gc_map_settings', [] );",
+            "    wp_localize_script( 'gc-market-map', 'GC_MAP_CONFIG', [",
+            "        'osApiKey'        => $opts['os_api_key'] ?? '',",
+            "        'osStyle'         => $opts['os_style'] ?? 'Light_3857',",
+            "        'esriApiKey'      => $opts['esri_api_key'] ?? '',",
+            "        'otherMaxZoom'    => intval( $opts['other_max_zoom'] ?? 12 ),",
+            "        'pointsEndpoint'  => rest_url( 'goldcrest-map/v1/points' ),",
+            "        'enquiryEndpoint' => rest_url( 'goldcrest-map/v1/enquiry' ),",
+            "        'nonce'           => wp_create_nonce( 'wp_rest' ),",
+            "    ] );",
+            "} );",
+            "",
+            "add_shortcode( 'goldcrest_market_map', function () {",
+            "    ob_start();",
+            "    include plugin_dir_path( __FILE__ ) . 'templates/shortcode-map.php';",
+            "    return ob_get_clean();",
+            "} );"
+          ].join("\n")
+        },
+        rest: {
+          title: "includes/class-gc-rest-enquiry.php",
+          role: "REST Endpoint, wp_mail & Mailchimp",
+          code: [
+            "<?php",
+            "add_action( 'rest_api_init', function () {",
+            "    register_rest_route( 'goldcrest-map/v1', '/enquiry', [",
+            "        'methods'             => 'POST',",
+            "        'permission_callback' => '__return_true',",
+            "        'callback'            => 'gc_handle_market_map_enquiry',",
+            "    ] );",
+            "} );",
+            "",
+            "function gc_handle_market_map_enquiry( WP_REST_Request $req ) {",
+            "    $p = $req->get_json_params();",
+            "    $ref      = sanitize_text_field( $p['ref'] ?? '' );",
+            "    $name     = sanitize_text_field( $p['name'] ?? '' );",
+            "    $email    = sanitize_email( $p['email'] ?? '' );",
+            "    $phone    = sanitize_text_field( $p['phone'] ?? '' );",
+            "    $message  = sanitize_textarea_field( $p['message'] ?? '' );",
+            "    $act_for  = ! empty( $p['actForMe'] );",
+            "    $property = sanitize_text_field( $p['property'] ?? '' );",
+            "",
+            "    if ( empty( $name ) || ! is_email( $email ) ) {",
+            "        return new WP_Error( 'invalid_enquiry', 'Name and valid email required.', [ 'status' => 400 ] );",
+            "    }",
+            "",
+            "    $opts = get_option( 'gc_map_settings', [] );",
+            "    $to   = sanitize_email( $opts['enquiry_email'] ?? 'office@goldcrestlfg.com' );",
+            "    $subj = sprintf( '[Goldcrest Market Map] %s Enquiry: %s', $act_for ? 'Act For Me' : 'Property', $ref );",
+            "    $body = \"Property: {$property}\\nBuyer: {$name} ({$email}, {$phone})\\nAct For Me: \" . ( $act_for ? 'Yes' : 'No' ) . \"\\n\\n{$message}\";",
+            "    $sent = wp_mail( $to, $subj, $body, [ 'Reply-To: ' . $name . ' <' . $email . '>' ] );",
+            "",
+            "    do_action( 'gc_market_map_mailchimp_tag', $email, $name, $phone, 'Buyer Inquiry' );",
+            "    return rest_ensure_response( [ 'ok' => $sent, 'ref' => $ref ] );",
+            "}"
+          ].join("\n")
+        },
+        sync: {
+          title: "includes/class-gc-sheet-sync.php",
+          role: "Admin Settings + Sheet / XLSX Importer",
+          code: [
+            "<?php",
+            "add_action( 'admin_menu', function () {",
+            "    add_options_page( 'Goldcrest Market Map', 'Goldcrest Market Map', 'manage_options', 'goldcrest-market-map', 'gc_render_admin_page' );",
+            "} );",
+            "",
+            "add_action( 'rest_api_init', function () {",
+            "    register_rest_route( 'goldcrest-map/v1', '/points', [",
+            "        'methods'             => 'GET',",
+            "        'permission_callback' => '__return_true',",
+            "        'callback'            => fn() => rest_ensure_response( get_option( 'gc_map_points_cache', [] ) ),",
+            "    ] );",
+            "} );",
+            "",
+            "function gc_sync_public_map_rows( array $rows ) {",
+            "    $public = [];",
+            "    foreach ( $rows as $r ) {",
+            "        if ( strcasecmp( trim( $r['status'] ?? '' ), 'For sale' ) !== 0 ) continue;",
+            "        if ( ( $r['pin'] ?? 'Other' ) === 'Other' ) {",
+            "            $r['lat'] = round( floatval( $r['lat'] ), 2 );",
+            "            $r['lon'] = round( floatval( $r['lon'] ), 2 );",
+            "        }",
+            "        $public[] = $r;",
+            "    }",
+            "    update_option( 'gc_map_points_cache', $public, false );",
+            "    return count( $public );",
+            "}"
+          ].join("\n")
+        },
+        css: {
+          title: "assets/css/market-map.css",
+          role: "Scoped Styles Under .gc-land-forestry-map",
+          code: [
+            "/* Scoped strictly to .gc-land-forestry-map to protect Elementor & Theme CSS */",
+            ".gc-land-forestry-map { font-family: 'Montserrat', sans-serif; color: #1B2B3A; }",
+            ".gc-land-forestry-map .gc-inner { max-width: 1240px; margin: 0 auto; }",
+            ".gc-land-forestry-map .gc-card { background: #FFFFFF; border: 1px solid #C4D0DC; border-radius: 12px; }",
+            ".gc-land-forestry-map .gc-legend { background: rgba(255,255,255,0.96); border: 1px solid #C4D0DC; }",
+            ".gc-land-forestry-map .gc-field label { font-size: 11px; text-transform: uppercase; color: #526375; }"
+          ].join("\n")
+        },
+        js: {
+          title: "assets/js/market-map.js",
+          role: "Leaflet 1.9.4 + otherMaxZoom + REST Enquiry",
+          code: [
+            "(function (cfg) {",
+            "  const map = L.map('gc-map', { minZoom: 5, maxZoom: 17 });",
+            "  const otherLayer = L.layerGroup().addTo(map);",
+            "  map.on('zoomend', function () {",
+            "    if (map.getZoom() > cfg.otherMaxZoom) {",
+            "      map.removeLayer(otherLayer); // Hide 2dp approx. wider-market pins",
+            "    } else {",
+            "      otherLayer.addTo(map);",
+            "    }",
+            "  });",
+            "})(window.GC_MAP_CONFIG || { otherMaxZoom: 12 });"
+          ].join("\n")
+        }
+      };
+
+      function showArchFile(key) {
+        const item = PLUGIN_FILES[key];
+        if (!item) return;
+        document.getElementById("arch-code-title").textContent = item.title;
+        document.getElementById("arch-code-role").textContent = item.role;
+        document.getElementById("arch-code-view").textContent = item.code;
+        document.querySelectorAll("#arch-file-tree .file-item").forEach((btn) => {
+          btn.classList.toggle("is-active", btn.dataset.file === key);
+        });
+      }
+
+      document.querySelectorAll("#arch-file-tree .file-item").forEach((btn) => {
+        btn.addEventListener("click", () => showArchFile(btn.dataset.file));
+      });
+
+      /* ====================================================================
+         10. INITIAL BOOTSTRAP
+      ==================================================================== */
+      populateRegions();
+      renderPins();
+      renderConfigPreview();
+      showArchFile("main");
+      map.fitBounds(UK_BOUNDS, { padding: [16, 16] });
+    })();
+  </script>
+</body>
+</html>
